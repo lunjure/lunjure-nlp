@@ -39,9 +39,15 @@ public class TokenizerTest {
 	}
 
 	@Test
-	public void test() {
+	public void testSimple() {
 		final String[] tokens = tokenizer.tokenize("rewe 1200 +1");
 		assertArrayEquals(new String[]{"rewe", "1200", "+1"}, tokens);
+	}
+	
+	@Test
+	public void testQuestion() throws Exception {
+		final String[] tokens = tokenizer.tokenize("Havanna 12:30, anybody?");
+		assertArrayEquals(new String[]{"Havanna", "12:30", ",", "anybody", "?"}, tokens);
 	}
 
 }
