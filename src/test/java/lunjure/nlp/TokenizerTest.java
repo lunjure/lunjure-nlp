@@ -49,5 +49,10 @@ public class TokenizerTest {
 		final String[] tokens = tokenizer.tokenize("Havanna 12:30, anybody?");
 		assertArrayEquals(new String[]{"Havanna", "12:30", ",", "anybody", "?"}, tokens);
 	}
-
+	
+	@Test
+	public void testTime() throws Exception {
+		final String[] tokens = tokenizer.tokenize("Havanna at twelve thirty, anybody?");
+		assertArrayEquals(new String[]{"Havanna", "at", "twelve", "thirty", ",", "anybody", "?"}, tokens);
+	}
 }
