@@ -55,4 +55,10 @@ public class TokenizerTest {
 		final String[] tokens = tokenizer.tokenize("Havanna at twelve thirty, anybody?");
 		assertArrayEquals(new String[]{"Havanna", "at", "twelve", "thirty", ",", "anybody", "?"}, tokens);
 	}
+	
+	@Test
+	public void testPizza() throws Exception {
+		final String[] tokens = tokenizer.tokenize("almost forgot: there some pizza left in the kitchen");
+		assertArrayEquals(new String[]{"almost", "forgot", ":", "there", "some", "pizza", "left", "in", "the", "kitchen"}, tokens);
+	}
 }
