@@ -20,12 +20,14 @@ public class NameFinderTest {
 	static NameFinderME timeNameFinder;
 	static NameFinderME dateNameFinder;
 	static NameFinderME personNameFinder;
+	static NameFinderME organizationNameFinder;
 	
 	@BeforeClass
 	public static void setUp() throws Exception {
 		timeNameFinder = getNameFinderFromModel("models/en-ner-time.bin");
 		personNameFinder = getNameFinderFromModel("models/en-ner-person.bin");
 		dateNameFinder = getNameFinderFromModel("models/en-ner-date.bin");
+		organizationNameFinder = getNameFinderFromModel("models/en-ner-organization.bin");
 	}
 	
 	private static NameFinderME getNameFinderFromModel(final String path) throws Exception {
@@ -91,7 +93,7 @@ public class NameFinderTest {
 
 	@Test
 	public void testDateSample() throws Exception {
-		final String[] tokens = new String[]{"rewe", "1200", "+1"};
+		final String[] tokens = new String[] {"rewe", "1200", "+1"};
 		// hm, tagged as date, not time...
 		final Span timeSpans[] = dateNameFinder.find(tokens);
 		assertEquals(1, timeSpans.length);		
@@ -106,7 +108,7 @@ public class NameFinderTest {
 
 	@Test
 	public void testPersonName() throws Exception {
-		final String[] tokens = new String[]{
+		final String[] tokens = new String[] {
 				"Pierre",
 			    "Vinken",
 			    "is",
@@ -118,5 +120,33 @@ public class NameFinderTest {
 		assertEquals(1, personSpans.length);
 		assertEquals("person", personSpans[0].getType());
 		assertEquals("Pierre Vinken", Span.spansToStrings(personSpans, tokens)[0]);
+	}
+	
+	@Test
+	public void testOrganizationName() throws Exception {
+		final String[] tokens = new String[] {
+			"We",
+			"are",	
+			"Microsoft",
+			",",
+			"resistance",
+			"is",
+			"futile",
+			"."
+		};
+		final Span[] organizationSpans = organizationNameFinder.find(tokens);
+		assertEquals(1, organizationSpans.length);
+		assertEquals("Microsoft", Span.spansToStrings(organizationSpans, tokens)[0]);
+	}
+	
+	@Test
+	@Ignore("Wohl nicht im model...")
+	public void testRewe() throws Exception {
+		final String[] tokens = new String[] {
+				"REWE", "1200", "+1"
+		};
+		final Span[] organizationSpans = organizationNameFinder.find(tokens);
+		assertEquals(1, organizationSpans.length);
+		
 	}
 }
