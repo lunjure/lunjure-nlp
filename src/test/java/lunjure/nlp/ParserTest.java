@@ -61,9 +61,10 @@ public class ParserTest {
 	}
 	
 	@Test
-	public void testName() throws Exception {
+	public void testParser() throws Exception {
 		final String sentence = "REWE 1200 +1";
 		Parse topParses[] = ParserTool.parseLine(sentence, parser, 1);
 		topParses[0].show();
 	}
+	
 }
