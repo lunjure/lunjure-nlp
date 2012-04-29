@@ -23,26 +23,39 @@ public class NLPProcessorTest {
 
 	@Test
 	public void testIsQuestion() throws Exception {
-		final boolean result = processor.isQuestion("Lamme somebody?");
-		assertTrue(result);
+		final ProcessedText result = processor.process("Lamme somebody?");
+		assertTrue(result.isQuestion());
 	}
 
 	@Test
 	public void testIsQuestionFalse() throws Exception {
-		final boolean result = processor.isQuestion("or maybe ...");
-		assertFalse(result);
+		final ProcessedText result = processor.process("or maybe ...");
+		assertFalse(result.isQuestion());
 	}
 
 	@Test
 	public void testIsInc() throws Exception {
-		final boolean result = processor.isInc("REWE 1200 +1");
-		assertTrue(result);
+		final ProcessedText result = processor.process("REWE 1200 +1");
+		assertTrue(result.isInc());
 	}
 
 	@Test
 	public void testIsIncPlusPlus() throws Exception {
-		final boolean result = processor.isInc("REWE 1200 ++");
-		assertTrue(result);
+		final ProcessedText result = processor.process("REWE 1200 ++");
+		assertTrue(result.isInc());
+	}
+	
+	@Test
+	public void testProcess() throws Exception {
+		final ProcessedText result = processor.process("Lamme somebody?");
+		assertArrayEquals(new String[]{"Lamme"}, result.getNames());
+		assertTrue(result.isQuestion());		
 	}
 
+	@Test
+	public void testProcessREWE() throws Exception {
+		final ProcessedText result = processor.process("REWE 1200 +1");
+		assertArrayEquals(new String[]{"REWE"}, result.getNames());
+		assertTrue(result.isInc());
+	}
 }

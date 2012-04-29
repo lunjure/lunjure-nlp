@@ -38,15 +38,15 @@ public class DictionaryNameFinderTest {
 	@Test
 	public void test() {
 		final String[] tokens = new String[]{"Havanna", "12:30", ",", "anybody", "?"};
-		final Span timeSpans[] = finder.find(tokens);
-		assertEquals(1, timeSpans.length);		
+		final Span spans[] = finder.find(tokens);
+		assertEquals(1, spans.length);		
 	}
 
 	@Test
 	public void testDateSample() throws Exception {
 		final String[] tokens = new String[] {"REWE", "1200", "+1"};
-		final Span timeSpans[] = finder.find(tokens);
-		assertEquals(1, timeSpans.length);		
+		final Span spans[] = finder.find(tokens);
+		assertEquals(1, spans.length);		
 	}
 
 }

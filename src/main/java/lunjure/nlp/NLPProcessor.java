@@ -1,30 +1,44 @@
 package lunjure.nlp;
 
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
+
+import opennlp.tools.dictionary.Dictionary;
+import opennlp.tools.namefind.DictionaryNameFinder;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
+import opennlp.tools.util.Span;
 
 public class NLPProcessor {
 
-	private Tokenizer tokenizer;
+	private TokenizerModel tokenizerModel;
+	private Dictionary dict;
 	private String tokenizerModelPath;
+	private String dictionaryPath;
 	
 	public NLPProcessor() {
 		this.tokenizerModelPath = "models/en-token.bin";
+		this.dictionaryPath = "models/en-ner-dict.txt";
 	}
 	
-	public void init()  throws RuntimeException {
+	public void init() {
+		initTokenizer();
+		initNameFinder();
+	}
+	
+	protected void initTokenizer()  throws RuntimeException {
 		InputStream in = null;
 		try {
 			in = new FileInputStream(this.tokenizerModelPath);
-			TokenizerModel model = new TokenizerModel(in);
-			tokenizer = new TokenizerME(model);
+			tokenizerModel = new TokenizerModel(in);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		} finally {
@@ -37,35 +51,43 @@ public class NLPProcessor {
 			}
 		}
 	}
-	
-	public String[] tokenize(final String sentence) {
-		return this.tokenizer.tokenize(sentence);
-	}
 
-	public boolean isQuestion(String sentence) {
-		final String[] tokens = this.tokenize(sentence);
-		final boolean result;
-		if (tokens.length > 0) {
-			result = (tokens[tokens.length -1].equals("?"));
-		} else {
-			result = false;
+	protected void initNameFinder()  throws RuntimeException {
+		Reader r = null;
+		try {
+			r = new FileReader(this.dictionaryPath);
+			dict = Dictionary.parseOneEntryPerLine(r);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		} finally {
+			if (r != null) {
+				try {
+					r.close();
+				} catch (IOException ex) {
+					
+				}
+			}
 		}
-		return result;
-	}
-
-	public boolean isInc(String sentence) {
-		final String[] tokens = this.tokenize(sentence);
-		final boolean result;
-		final List<String> tokenList = Arrays.asList(tokens);
-		if (tokenList.contains("+1")) {
-			result = true;
-		} else if (tokenList.contains("+")) {
-			result = true;
-		} else {
-			result = false;
-		}
-		return result;
 	}
 	
+	protected String[] tokenize(final String sentence) {
+		final Tokenizer tokenizer = new TokenizerME(tokenizerModel);
+		return tokenizer.tokenize(sentence);
+	}
+	
+	protected String[] findNames(final String[] tokens) {
+		final DictionaryNameFinder finder = new DictionaryNameFinder(dict);
+		final Span[] spans = finder.find(tokens);
+		return Span.spansToStrings(spans, tokens);
+	}
+	
+	public ProcessedText process(final String sentence) {
+		final ProcessedText result = new ProcessedText();
+		
+		result.setTokens(this.tokenize(sentence));
+		result.setNames(findNames(result.getTokens()));
+		
+		return result;
+	}
 	
 }
